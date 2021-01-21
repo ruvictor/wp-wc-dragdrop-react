@@ -81,6 +81,63 @@ const PlaceOrder = styled.div`
 export default class Main extends Component {
     state = initialData;
 
+
+componentDidMount() {
+fetch("https://localhost/wp-json/wc/v2/products/11?consumer_key="+ this.state.consumer_key +"&consumer_secret=" + this.state.consumer_secret)
+    .then(res => res.json())
+        .then(
+            (result) => {
+                this.setState(prevState => ({
+                    ...prevState,
+                    productsColumn: {
+                        ...prevState.productsColumn,
+                        products: {
+                            ...prevState.productsColumn.products, 
+                            productIds: result.grouped_products
+                            // anotherProperty: {
+                            //    ...prevState.someProperty.someOtherProperty.anotherProperty,
+                            //    flag: false
+                            // }
+                        }
+                    }
+                }));
+                // var newAPIProducts = {...this.state.productsColumn.products.productIds}
+                // const newStateAPI = {
+                //     ...this.state,
+                //     // totalPrice: parseInt(currentItemPrice) + parseInt(this.state.totalPrice),
+                //     days: {
+                //         ...this.state.days,
+                //         // [newStart.id]: newStart,
+                //         // [newFinish.id]: newFinish
+                //     },
+                //     productsColumn: {
+                //         ...this.state.productsColumn,
+                //         // ...this.state.productsColumn.products,
+                //         [newAPIProducts]: Object.keys(result.related_ids)
+                //     }
+                // };
+                // console.log(newStateAPI);
+                // this.setState(newStateAPI);
+                // var newStateAPI = {...this.state.productsColumn}
+                // newStateAPI.products.productIds = result.grouped_products;
+                // this.setState(newStateAPI);
+                // this.setState({
+                //     isLoaded: true,
+                //     productsAPI: result
+                // });
+            },
+            // Note: it's important to handle errors here
+            // instead of a catch() block so that we don't swallow
+            // exceptions from actual bugs in components.
+            (error) => {
+                this.setState({
+                    isLoaded: true,
+                    error
+                });
+            }
+        )
+}
+
     onDragEnd = result => {
         
         const { destination, source, draggableId } = result;

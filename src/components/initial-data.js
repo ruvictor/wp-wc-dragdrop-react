@@ -3,21 +3,26 @@ import menu2 from '../assets/2.jpg';
 import menu3 from '../assets/3.jpg';
 
 const initialData = {
+    consumer_key: 'ck_d8d533b58c08de9ad21cc73ea9cca871ef8857a7',
+    consumer_secret: 'cs_6a0bff1dbf6841f218651d8a3c9faa73a2f831ea',
+    isLoaded: false,
     products: {
-        'product-1': {id: 'product-1', content: menu1, price: '50'},
-        'product-2': {id: 'product-2', content: menu2, price: '10'},
-        'product-3': {id: 'product-3', content: menu3, price: '6'},
-        'product-4': {id: 'product-4', content: menu1, price: '18'},
-        'product-5': {id: 'product-5', content: menu2, price: '11'},
-        'product-6': {id: 'product-6', content: menu1, price: '2'},
-        'product-7': {id: 'product-7', content: menu3, price: '3'}
+        '17': {id: '17', content: menu1, price: '50'},
+        '15': {id: '15', content: menu2, price: '10'},
+        '24': {id: '24', content: menu3, price: '6'},
+        '25': {id: '25', content: menu1, price: '18'},
+        '26': {id: '26', content: menu2, price: '11'},
+        '27': {id: '27', content: menu1, price: '2'},
+        '28': {id: '28', content: menu3, price: '3'}
     },
     totalPrice: 0,
     productsColumn: {
         products:{
             id: 'products',
             title: 'Products',
-            productIds: ['product-1', 'product-2', 'product-3', 'product-4', 'product-5', 'product-6', 'product-7']
+            productIds: []
+            // productIds: ['17', '15', '24', '25', '26', '27', '28']
+            // productIds: ['product-1', 'product-2', 'product-3', 'product-4', 'product-5', 'product-6', 'product-7']
         }
     },
     days: {
