@@ -82,66 +82,77 @@ export default class Main extends Component {
     state = initialData;
 
 
-componentDidMount() {
-fetch("https://localhost/wp-json/wc/v2/products/11?consumer_key="+ this.state.consumer_key +"&consumer_secret=" + this.state.consumer_secret)
-    .then(res => res.json())
-        .then(
-            (result) => {
+    componentDidMount() {
+
+    fetch("https://localhost/wp-json/wc/v2/products/11?consumer_key="+ this.state.consumer_key +"&consumer_secret=" + this.state.consumer_secret)
+        .then(res => res.json())
+            .then(
+                (result) => {
+                    var APIIds = result.grouped_products;
+                    
+                    console.log(result.grouped_products.map(String));
+                    APIIds.map((productID) => {
+                        return fetch("https://localhost/wp-json/wc/v2/products/"+ productID +"?consumer_key="+ this.state.consumer_key +"&consumer_secret=" + this.state.consumer_secret)
+                            .then(res => res.json())
+                                .then(
+                                    (result) => {
+                                        const id = result.id;
+                                        const content = result.images[0].src;
+                                        const price = result.price;
+                                        // updating the state
+                                        const newProds = {
+                                            ...this.state,
+                                            isLoaded: true,
+                                            products: {
+                                                ...this.state.products,
+                                                [id]:{
+                                                    ...this.state.products[id],
+                                                    id: JSON.stringify(id),
+                                                    content: content,
+                                                    price: price
+                                                }
+                                            }
+                                        };
+                                        this.setState(newProds);
+                                    },
+                                    (error) => {
+                                        this.setState({
+                                            isLoaded: false,
+                                            error
+                                        });
+                                    }
+                                );
+                        
+                    });
+                    
+                // updating the state
+                if(this.state.isLoaded)
                 this.setState(prevState => ({
                     ...prevState,
                     productsColumn: {
                         ...prevState.productsColumn,
                         products: {
                             ...prevState.productsColumn.products, 
-                            productIds: result.grouped_products
-                            // anotherProperty: {
-                            //    ...prevState.someProperty.someOtherProperty.anotherProperty,
-                            //    flag: false
-                            // }
+                            productIds: result.grouped_products.map(String)
                         }
                     }
                 }));
-                // var newAPIProducts = {...this.state.productsColumn.products.productIds}
-                // const newStateAPI = {
-                //     ...this.state,
-                //     // totalPrice: parseInt(currentItemPrice) + parseInt(this.state.totalPrice),
-                //     days: {
-                //         ...this.state.days,
-                //         // [newStart.id]: newStart,
-                //         // [newFinish.id]: newFinish
-                //     },
-                //     productsColumn: {
-                //         ...this.state.productsColumn,
-                //         // ...this.state.productsColumn.products,
-                //         [newAPIProducts]: Object.keys(result.related_ids)
-                //     }
-                // };
-                // console.log(newStateAPI);
-                // this.setState(newStateAPI);
-                // var newStateAPI = {...this.state.productsColumn}
-                // newStateAPI.products.productIds = result.grouped_products;
-                // this.setState(newStateAPI);
-                // this.setState({
-                //     isLoaded: true,
-                //     productsAPI: result
-                // });
-            },
-            // Note: it's important to handle errors here
-            // instead of a catch() block so that we don't swallow
-            // exceptions from actual bugs in components.
-            (error) => {
-                this.setState({
-                    isLoaded: true,
-                    error
-                });
-            }
-        )
+
+                },
+                (error) => {
+                    this.setState({
+                        isLoaded: false,
+                        error
+                    });
+                }
+            )
+    
 }
 
     onDragEnd = result => {
         
         const { destination, source, draggableId } = result;
-        console.log(destination);
+        // console.log(destination);
         if(!destination || destination.droppableId === 'products'){
             return;
         }
@@ -208,7 +219,9 @@ fetch("https://localhost/wp-json/wc/v2/products/11?consumer_key="+ this.state.co
     render(){
         let totalPrice = this.state.totalPrice;
         return (
-            <BodyBlock>
+            <>
+            {this.state.isLoaded ? 
+            (<BodyBlock>
                 <DragDropContext onDragEnd={this.onDragEnd}>
                     <WeekDaysContainer>
                         <MainTitle>Personalize Your Order</MainTitle>
@@ -245,7 +258,8 @@ fetch("https://localhost/wp-json/wc/v2/products/11?consumer_key="+ this.state.co
                         <PlaceOrder>Place Order</PlaceOrder>
                     }
                 </DragDropContext>
-            </BodyBlock>
+            </BodyBlock>) : ''}
+            </>
         )
     }
 }
