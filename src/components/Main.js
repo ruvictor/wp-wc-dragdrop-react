@@ -82,64 +82,64 @@ export default class Main extends Component {
     state = initialData;
 
 
-    async componentDidMount() {
+    componentDidMount() {
 
-    fetch("https://localhost/wp-json/wc/v2/products/11?consumer_key="+ this.state.consumer_key +"&consumer_secret=" + this.state.consumer_secret)
-        .then(res => res.json())
-            .then(
-                (mainResult) => {
-                    var APIIds = mainResult.grouped_products;
-                    
-                    APIIds.map((productID) => {
-                        return fetch("https://localhost/wp-json/wc/v2/products/"+ productID +"?consumer_key="+ this.state.consumer_key +"&consumer_secret=" + this.state.consumer_secret)
-                            .then(res => res.json())
-                                .then(
-                                    (result) => {
-                                        const id = result.id;
-                                        const content = result.images[0].src;
-                                        const price = result.price;
-
-                                        // updating the state
-                                        const newProds = {
-                                            ...this.state,
-                                            isLoaded: Object.keys(this.state.products).length === APIIds.length - 1 ? true : false,
-                                            products: {
-                                                ...this.state.products,
-                                                [id]:{
-                                                    ...this.state.products[id],
-                                                    id: JSON.stringify(id),
-                                                    content: content,
-                                                    price: price
-                                                }
-                                            },
-                                            productsColumn: {
-                                                ...this.state.productsColumn,
-                                                products: {
-                                                    ...this.state.productsColumn.products,
-                                                    productIds: mainResult.grouped_products.map(String)
-                                                }
-                                            }
-                                        };
-                                        this.setState(newProds);
-                                    },
-                                    (error) => {
-                                        this.setState({
-                                            isLoaded: false,
-                                            error
-                                        });
-                                    }
-                                );
+        fetch("https://localhost/wp-json/wc/v2/products/11?consumer_key="+ this.state.consumer_key +"&consumer_secret=" + this.state.consumer_secret)
+            .then(res => res.json())
+                .then(
+                    (mainResult) => {
+                        var APIIds = mainResult.grouped_products;
                         
-                    });
+                        APIIds.map((productID) => {
+                            return fetch("https://localhost/wp-json/wc/v2/products/"+ productID +"?consumer_key="+ this.state.consumer_key +"&consumer_secret=" + this.state.consumer_secret)
+                                .then(res => res.json())
+                                    .then(
+                                        (result) => {
+                                            const id = result.id;
+                                            const content = result.images[0].src;
+                                            const price = result.price;
 
-                },
-                (error) => {
-                    this.setState({
-                        isLoaded: false,
-                        error
-                    });
-                }
-            )
+                                            // updating the state
+                                            const newProds = {
+                                                ...this.state,
+                                                isLoaded: Object.keys(this.state.products).length === APIIds.length - 1 ? true : false,
+                                                products: {
+                                                    ...this.state.products,
+                                                    [id]:{
+                                                        ...this.state.products[id],
+                                                        id: JSON.stringify(id),
+                                                        content: content,
+                                                        price: price
+                                                    }
+                                                },
+                                                productsColumn: {
+                                                    ...this.state.productsColumn,
+                                                    products: {
+                                                        ...this.state.productsColumn.products,
+                                                        productIds: mainResult.grouped_products.map(String)
+                                                    }
+                                                }
+                                            };
+                                            this.setState(newProds);
+                                        },
+                                        (error) => {
+                                            this.setState({
+                                                isLoaded: false,
+                                                error
+                                            });
+                                        }
+                                    );
+                            
+                        });
+
+                    },
+                    (error) => {
+                        this.setState({
+                            isLoaded: false,
+                            error
+                        });
+                    }
+                )
         
     
 }
