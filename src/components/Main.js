@@ -82,15 +82,14 @@ export default class Main extends Component {
     state = initialData;
 
 
-    componentDidMount() {
+    async componentDidMount() {
 
     fetch("https://localhost/wp-json/wc/v2/products/11?consumer_key="+ this.state.consumer_key +"&consumer_secret=" + this.state.consumer_secret)
         .then(res => res.json())
             .then(
-                (result) => {
-                    var APIIds = result.grouped_products;
+                (mainResult) => {
+                    var APIIds = mainResult.grouped_products;
                     
-                    console.log(result.grouped_products.map(String));
                     APIIds.map((productID) => {
                         return fetch("https://localhost/wp-json/wc/v2/products/"+ productID +"?consumer_key="+ this.state.consumer_key +"&consumer_secret=" + this.state.consumer_secret)
                             .then(res => res.json())
@@ -99,10 +98,11 @@ export default class Main extends Component {
                                         const id = result.id;
                                         const content = result.images[0].src;
                                         const price = result.price;
+
                                         // updating the state
                                         const newProds = {
                                             ...this.state,
-                                            isLoaded: true,
+                                            isLoaded: Object.keys(this.state.products).length === APIIds.length - 1 ? true : false,
                                             products: {
                                                 ...this.state.products,
                                                 [id]:{
@@ -110,6 +110,13 @@ export default class Main extends Component {
                                                     id: JSON.stringify(id),
                                                     content: content,
                                                     price: price
+                                                }
+                                            },
+                                            productsColumn: {
+                                                ...this.state.productsColumn,
+                                                products: {
+                                                    ...this.state.productsColumn.products,
+                                                    productIds: mainResult.grouped_products.map(String)
                                                 }
                                             }
                                         };
@@ -124,19 +131,6 @@ export default class Main extends Component {
                                 );
                         
                     });
-                    
-                // updating the state
-                if(this.state.isLoaded)
-                this.setState(prevState => ({
-                    ...prevState,
-                    productsColumn: {
-                        ...prevState.productsColumn,
-                        products: {
-                            ...prevState.productsColumn.products, 
-                            productIds: result.grouped_products.map(String)
-                        }
-                    }
-                }));
 
                 },
                 (error) => {
@@ -146,6 +140,7 @@ export default class Main extends Component {
                     });
                 }
             )
+        
     
 }
 
@@ -217,6 +212,7 @@ export default class Main extends Component {
     }
 
     render(){
+        
         let totalPrice = this.state.totalPrice;
         return (
             <>
