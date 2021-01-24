@@ -25,7 +25,7 @@ export default class Product extends Component {
                         {...provided.dragHandleProps}
                         ref={provided.innerRef}
                     >
-                        <img src={this.props.product.content} alt="menu" style={{'width': '100px'}} /><br />
+                        <img src={this.props.product.content} alt="menu" style={{'width': '100px','height': '100px'}} /><br />
                         ${this.props.product.price}
                     </Container>
                 )}
