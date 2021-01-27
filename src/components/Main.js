@@ -9,9 +9,8 @@ import Product from './product';
 const BodyBlock = styled.div`
     background-color: #F4F4F4;
     margin: 0;
-    paddding: 0;
+    padding: 0 0 20px;
     width: 100%;
-    height: 100vh;
     display: table;
 `;
 const MainTitle = styled.h3`
