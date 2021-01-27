@@ -26,7 +26,7 @@ const WeekDaysContainer = styled.div`
     display: table;
     margin: 20px auto 0;
     width: 100%;
-    max-width: 1070px;
+    max-width: 900px;
     background-color: #fff;
     border-radius: 5px;
     box-shadow: 0 0 10px 0 rgba(0,0,0,0.15);
@@ -49,7 +49,7 @@ const ProductsBlock = styled.div`
     display: table;
     margin: 35px auto 0;
     border-radius: 5px;
-    min-width: 842px;
+    min-width: 632px;
     background-color: #FFF;
     box-shadow: 0 0 10px 0 rgba(0,0,0,0.15);
     -moz-box-shadow: 0 0 10px 0 rgba(0,0,0,0.15);
