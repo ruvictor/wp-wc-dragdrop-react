@@ -6,6 +6,7 @@ import initialData from './initial-data';
 import Column from './column';
 import Product from './product';
 import PlaceOrderButton from './PlaceOrderButton';
+import Spinner from '../assets/spinner.gif';
 
 const BodyBlock = styled.div`
     background-color: #F4F4F4;
@@ -258,7 +259,7 @@ export default class Main extends Component {
                         </PlaceOrder>
                     }
                 </DragDropContext>
-            </BodyBlock>) : ''}
+            </BodyBlock>) : <img src={Spinner} style={{'width': '100px','display':'table','margin':'0 auto'}} alt="Spinner" />}
             </>
         )
     }
