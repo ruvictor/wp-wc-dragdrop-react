@@ -10,8 +10,6 @@ const initialData = {
             id: 'products',
             title: 'Products',
             productIds: []
-            // productIds: ['17', '15', '24', '25', '26', '27', '28']
-            // productIds: ['product-1', 'product-2', 'product-3', 'product-4', 'product-5', 'product-6', 'product-7']
         }
     },
     days: {

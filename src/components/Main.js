@@ -5,6 +5,7 @@ import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import initialData from './initial-data';
 import Column from './column';
 import Product from './product';
+import PlaceOrderButton from './PlaceOrderButton';
 
 const BodyBlock = styled.div`
     background-color: #F4F4F4;
@@ -250,7 +251,11 @@ export default class Main extends Component {
                                 )}
                             </Droppable>
                         </ProductsBlock>) : 
-                        <PlaceOrder>Place Order</PlaceOrder>
+                        <PlaceOrder>
+                            <PlaceOrderButton
+                                days={this.state.days}
+                            />
+                        </PlaceOrder>
                     }
                 </DragDropContext>
             </BodyBlock>) : ''}
