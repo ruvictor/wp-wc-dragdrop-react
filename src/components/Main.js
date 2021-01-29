@@ -143,7 +143,7 @@ export default class Main extends Component {
                 )
         
     
-}
+    }
 
     onDragEnd = result => {
         
@@ -215,12 +215,15 @@ export default class Main extends Component {
     render(){
         
         let totalPrice = this.state.totalPrice;
+
+        const orderDone = this.state.productsColumn.products.productIds.length !== 0 ? true : false;
+        // const disablePersonalization = !orderDone ? "'pointerEvents':'none'" : '';
         return (
             <>
             {this.state.isLoaded ? 
             (<BodyBlock>
                 <DragDropContext onDragEnd={this.onDragEnd}>
-                    <WeekDaysContainer>
+                    <WeekDaysContainer style={{'pointerEvents': !orderDone ? 'none' : ''}}>
                         <MainTitle>Personalize Your Order</MainTitle>
                         <WeekDaysBlock>
                             {this.state.daysOrder.map((dayId) => {
@@ -235,7 +238,7 @@ export default class Main extends Component {
                         </OrderInfo>
                     </WeekDaysContainer>
             
-                    {this.state.productsColumn.products.productIds.length !== 0 ? 
+                    {orderDone ? 
                         (<ProductsBlock>
                             <Title>{this.state.productsColumn.products.title}</Title>
                             <Droppable droppableId={this.state.productsColumn.products.id}>

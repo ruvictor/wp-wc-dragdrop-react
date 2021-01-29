@@ -10,12 +10,6 @@
 //* Don't access this file directly
 defined( 'ABSPATH' ) or die();
 
-//* Register activation hook to add Blog Manager role
-// register_activation_hook( __FILE__ , 'vm_activation' );
-
-//* Register deactivation hook to remove Blog Manager role
-// register_deactivation_hook( __FILE__ , 'vm_deactivation' );
-
 // remove quantity from all products
 add_filter( 'woocommerce_is_sold_individually', 'wc_remove_all_quantity_fields', 10, 2 );
 function wc_remove_all_quantity_fields( $return, $product ) 
@@ -49,6 +43,7 @@ function vicode_filter_grouped_cart(){
 
 function vicode_react_app() {
     global $post;
+    $assetsMediaURL = trim(str_replace('http://localhost/','',plugin_dir_url( __FILE__ )));
     echo '
     <style>
         .related,.woocommerce-product-gallery,.entry-summary,.woocommerce-tabs{
@@ -60,7 +55,8 @@ function vicode_react_app() {
     <noscript>You need to enable JavaScript to run this app.</noscript>
         <div id="root"></div>
         <script>
-        var productParentId = '.$post->ID.';
+            var assetsMediaURL = "'.$assetsMediaURL.'";
+            var productParentId = '.$post->ID.';
             !(function (e) {
                 function r(r) {
                     for (var n, u, i = r[0], c = r[1], l = r[2], p = 0, s = []; p < i.length; p++) (u = i[p]), Object.prototype.hasOwnProperty.call(o, u) && o[u] && s.push(o[u][0]), (o[u] = 0);
@@ -151,11 +147,11 @@ function vicode_react_app() {
                         var r =
                             e && e.__esModule
                                 ? function () {
-                                      return e.default;
-                                  }
+                                    return e.default;
+                                }
                                 : function () {
-                                      return e;
-                                  };
+                                    return e;
+                                };
                         return u.d(r, "a", r), r;
                     }),
                     (u.o = function (e, r) {
@@ -174,14 +170,14 @@ function vicode_react_app() {
             })([]);
         </script>
         <script src="'.plugin_dir_url( __FILE__ ) .'/static/js/2.ab43b664.chunk.js"></script>
-        <script src="'.plugin_dir_url( __FILE__ ) .'/static/js/main.dd5960a9.chunk.js"></script>
+        <script src="'.plugin_dir_url( __FILE__ ) .'/static/js/main.ba8c8c2d.chunk.js"></script>
     ';
 }
 
 
 
 
-function webroom_add_multiple_products_to_cart( $url = false ) {
+function vicode_add_multiple_products_to_cart( $url = false ) {
 	// Make sure WC is installed, and add-to-cart qauery arg exists, and contains at least one comma.
 	if ( ! class_exists( 'WC_Form_Handler' ) || empty( $_REQUEST['add-to-cart'] ) || false === strpos( $_REQUEST['add-to-cart'], ',' ) ) {
 		return;
@@ -197,32 +193,11 @@ function webroom_add_multiple_products_to_cart( $url = false ) {
 
 
 	foreach ( $product_ids as $id_and_quantity ) {
-		// Check for quantities defined in curie notation (<product_id>:<product_quantity>)
-		
+		// Check for days defined in curie notation (<product_id>:<product_day>)
         $id_and_quantity = explode( ':', $id_and_quantity );
         $product_id = $id_and_quantity[0];
 
-
-
-
-        // $product = wc_get_product( $product_id );
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
         $adding_to_cart    = wc_get_product( $product_id );
-
-		
 
 		$_REQUEST['quantity'] = ! empty( $id_and_quantity[1] ) ? absint( $id_and_quantity[1] ) : 1;
 
@@ -234,6 +209,9 @@ function webroom_add_multiple_products_to_cart( $url = false ) {
             // saving weekday in the database
             $adding_to_cart->update_meta_data( 'weekday', sanitize_text_field( $id_and_quantity[1] ) );
             $adding_to_cart->save();
+
+            $weekday = $adding_to_cart->get_meta( 'weekday' );
+            $_SESSION['weekday'] = $weekday;
 
             return WC_Form_Handler::add_to_cart_action( $url );
         }
@@ -247,55 +225,26 @@ function webroom_add_multiple_products_to_cart( $url = false ) {
         $adding_to_cart->save();
 
         $weekday = $adding_to_cart->get_meta( 'weekday' );
+        $_SESSION['weekday'] = $weekday;
 
-        echo "<pre>";
-        var_dump($weekday);
-        echo "</pre>";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        // Add the item data
+        add_filter( 'woocommerce_add_cart_item_data', 'insert_cartt', 10, 4 );
 
 		if ( ! $adding_to_cart ) {
 			continue;
 		}
 
         $add_to_cart_handler = apply_filters( 'woocommerce_add_to_cart_handler', $adding_to_cart->get_type(), $adding_to_cart );
-        
-        
 
-		// Variable product handling
-		if ( 'variable' === $add_to_cart_handler ) {
-			woo_hack_invoke_private_method( 'WC_Form_Handler', 'add_to_cart_handler_variable', $product_id );
-
-		// Grouped Products
-		} elseif ( 'grouped' === $add_to_cart_handler ) {
-			woo_hack_invoke_private_method( 'WC_Form_Handler', 'add_to_cart_handler_grouped', $product_id );
-
-		// Custom Handler
-		} elseif ( has_action( 'woocommerce_add_to_cart_handler_' . $add_to_cart_handler ) ){
-			do_action( 'woocommerce_add_to_cart_handler_' . $add_to_cart_handler, $url );
-
-		// Simple Products
-		} else {
-			woo_hack_invoke_private_method( 'WC_Form_Handler', 'add_to_cart_handler_simple', $product_id );
-		}
-	}
+		// grouped product handling
+		woo_hack_invoke_private_method( 'WC_Form_Handler', 'add_to_cart_handler_simple', $product_id );
+		
+    }
+    
 }
 
 // Fire before the WC_Form_Handler::add_to_cart_action callback.
-add_action( 'wp_loaded', 'webroom_add_multiple_products_to_cart', 15 );
+add_action( 'wp_loaded', 'vicode_add_multiple_products_to_cart', 15 );
 
 
 /**
@@ -319,31 +268,31 @@ function woo_hack_invoke_private_method( $class_name, $methodName ) {
 	$method = $reflection->getMethod( $methodName );
 	$method->setAccessible( true );
 
-	//$args = array_merge( array( $class_name ), $args );
 	$args = array_merge( array( $reflection ), $args );
 	return call_user_func_array( array( $method, 'invoke' ), $args );
 }
 
-// display field in the cart
-// http://localhost/product/meat-and-veggies/?add-to-cart=17:monday,25:tuesday,28:friday
-// function vicode_field_to_cart( $name, $cart_item, $cart_item_key ) {
-//     global $post;
+function insert_cartt($cart_item_data, $product_id, $variation_id, $weekday){
+
+    $cart_item_data['weekday'] =  $_SESSION['weekday'];
+
+    return $cart_item_data;
     
-//     $product = wc_get_product( $post->ID );
-//     // $weekday = $product->get_meta( 'weekday' );
-
-//     echo "<pre>";
-//     var_dump($post->ID);
-//     echo "</pre>";
+}
 
 
+// display weekday on the cart page
+function vicode_field_to_cart( $item_data, $cart_item_data ) {
 
-//     if( isset( $weekday ) ) {
-//         $product_weekday .= sprintf(
-//             '<p>%s</p>',
-//             esc_html( $weekday )
-//         );
-//     }
-//     return $product_weekday;
-// }
-// add_filter( 'woocommerce_cart_item_name', 'vicode_field_to_cart', 10, 3 );
+        $item_data[] = array(
+            'key' => __( 'Day', 'vicode-media' ),
+            'value' => wc_clean( $cart_item_data['weekday'] )
+        );
+    return $item_data;
+}
+add_filter( 'woocommerce_get_item_data', 'vicode_field_to_cart', 10, 2 );
+
+
+
+
+
